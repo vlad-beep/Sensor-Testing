@@ -2,14 +2,32 @@
     margin: 0;
     padding: 0;
 }
-
-.prank{
+body{
+    height: 100vh;
+}
+.buttons{
     position: absolute;
     top: 10px;
     right: 10px;
+}
+
+.buttons button {
     width: 100px;
-    height: 20px;
+    height: 30px;
     border-radius: 20px;
-    background-color: red;
     color: #fff;
+    cursor: pointer;
+}
+
+.buttons .prank {
+    background-color: red;
+}
+
+.buttons .fix {
+    background-color: green;
+}
+
+.chart{
+    height: 90vh;
+    width: 100%;
 }

@@ -5,38 +5,45 @@ const xn = []; // lower limit array
 const deltaXA = []; // emergency inter-set array
 const sensorData = []; // array to store sensor data
 const prank = document.querySelector('.prank');
+const fix = document.querySelector('.fix');
 let lowerLimitArray = 22;
 let upperLimitArray = 55;
-
-//prank.addEventListener('click', pranks);
-
+let prankvalue = 0;
+prank.addEventListener('click', pranks);
+fix.addEventListener('click', fixs);
+function pranks() {
+  prankvalue = 100;
+}
+function fixs() {
+  prankvalue = 0;
+}
 InitializeOptions();
 
 const sensorChart = new Chart(document.getElementById('myChart').getContext('2d'), {
   type: 'line',
   data: {
-    labels: [], // Add labels for x-axis here
+    labels: [],
     datasets: [
       {
         label: 'Sensor 1',
         data: sensorData[0],
         borderColor: 'red',
         borderWidth: 1,
-        tesion: 0.2,
+        tesion: 0.4,
       },
       {
         label: 'Sensor 2',
         data: sensorData[1],
         borderColor: 'blue',
         borderWidth: 1,
-        tesion: 0.2,
+        tesion: 0.4,
       },
       {
         label: 'Sensor 3',
         data: sensorData[2],
         borderColor: 'yellow',
         borderWidth: 1,
-        tesion: 0.2,
+        tesion: 0.4,
       },
     ],
   },
@@ -96,7 +103,7 @@ function testAllSensors() {
 }
 
 function getRandomNumber(min, max) {
-  return Math.random() * (max - min) + min;
+  return Math.random() * (max + prankvalue - min) + min;
 }
 
 function testSensor(sensorIndex) {
@@ -115,7 +122,6 @@ function testSensor(sensorIndex) {
   sensorData[sensorIndex].push(sensorValue);
 
   sensorChart.data.datasets[sensorIndex].data = sensorData[sensorIndex];
-  console.log(upperLimitArray);
   sensorChart.update();
 }
 
