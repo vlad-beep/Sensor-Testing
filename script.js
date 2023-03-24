@@ -1,93 +1,37 @@
-const n = 3; // number of sensors
+const n = 5; // number of sensors
 const deltaT = 2000; // experimentation period in milliseconds
 const xv = []; // upper limit array
 const xn = []; // lower limit array
 const deltaXA = []; // emergency inter-set array
 const sensorData = []; // array to store sensor data
-const prank = document.querySelector('.prank');
-const fix = document.querySelector('.fix');
+const dataset = [];
 let lowerLimitArray = 22;
 let upperLimitArray = 55;
 let prankvalue = 0;
-prank.addEventListener('click', pranks);
-fix.addEventListener('click', fixs);
-function pranks() {
+
+const prank = document.querySelector('.prank');
+const fix = document.querySelector('.fix');
+
+prank.addEventListener('click', function () {
   prankvalue = 100;
-}
-function fixs() {
+});
+fix.addEventListener('click', function () {
   prankvalue = 0;
-}
-InitializeOptions();
-
-const sensorChart = new Chart(document.getElementById('myChart').getContext('2d'), {
-  type: 'line',
-  data: {
-    labels: [],
-    datasets: [
-      {
-        label: 'Sensor 1',
-        data: sensorData[0],
-        borderColor: 'red',
-        borderWidth: 1,
-        tesion: 0.4,
-      },
-      {
-        label: 'Sensor 2',
-        data: sensorData[1],
-        borderColor: 'blue',
-        borderWidth: 1,
-        tesion: 0.4,
-      },
-      {
-        label: 'Sensor 3',
-        data: sensorData[2],
-        borderColor: 'yellow',
-        borderWidth: 1,
-        tesion: 0.4,
-      },
-    ],
-  },
-
-  options: {
-    responsive: true,
-    title: {
-      display: true,
-      text: 'Sensor Data',
-    },
-    tooltips: {
-      mode: 'index',
-      intersect: false,
-    },
-    hover: {
-      mode: 'nearest',
-      intersect: true,
-    },
-    scales: {
-      x: {
-        display: true,
-        scaleLabel: {
-          display: true,
-          labelString: 'Time',
-        },
-      },
-
-      y: {
-        display: true,
-        scaleLabel: {
-          display: true,
-          labelString: 'Value',
-        },
-        ticks: {
-          suggestedMin: 0,
-          suggestedMax: 100,
-        },
-      },
-    },
-  },
 });
 
-setInterval(testAllSensors, deltaT);
+class Sensor {
+  constructor(label, data, borderColor) {
+    this.label = label;
+    this.data = data;
+    this.borderColor = borderColor;
+    this.borderWidth = 1;
+    this.tension = 0.1;
+  }
+}
 
+InitializeOptions();
+sensorChart = InitializeChart();
+setInterval(testAllSensors, deltaT);
 setInterval(printSensorData, 10000);
 
 function testAllSensors() {
@@ -133,6 +77,12 @@ function printSensorData() {
 
 function InitializeOptions() {
   for (let i = 0; i < n; i++) {
+    const label = `Sensor ${i + 1}`;
+    const dataValues = sensorData[i];
+    const borderColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+
+    const sensor = new Sensor(label, dataValues, borderColor);
+    dataset.push(sensor);
     // Initialize limits
     xv[i] = upperLimitArray;
     xn[i] = lowerLimitArray;
@@ -141,4 +91,52 @@ function InitializeOptions() {
     // Initialize sensor data array
     sensorData[i] = [];
   }
+}
+
+function InitializeChart() {
+  const sensorChart = new Chart(document.getElementById('myChart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: dataset,
+    },
+    options: {
+      responsive: true,
+      title: {
+        display: true,
+        text: 'Sensor Data',
+      },
+      tooltips: {
+        mode: 'index',
+        intersect: false,
+      },
+      hover: {
+        mode: 'nearest',
+        intersect: true,
+      },
+      scales: {
+        x: {
+          display: true,
+          scaleLabel: {
+            display: true,
+            labelString: 'Time',
+          },
+        },
+
+        y: {
+          display: true,
+          scaleLabel: {
+            display: true,
+            labelString: 'Value',
+          },
+          ticks: {
+            suggestedMin: 0,
+            suggestedMax: 100,
+          },
+        },
+      },
+    },
+  });
+
+  return sensorChart;
 }
