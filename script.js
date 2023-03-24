@@ -5,12 +5,15 @@ const xn = []; // lower limit array
 const deltaXA = []; // emergency inter-set array
 const sensorData = []; // array to store sensor data
 const dataset = [];
+const sensorPriority = [3, 2, 1, 0, 4];
 let lowerLimitArray = 22;
 let upperLimitArray = 55;
 let prankvalue = 0;
+let byPriority = false;
 
 const prank = document.querySelector('.prank');
 const fix = document.querySelector('.fix');
+const priorityBtn = document.querySelector('.toggle__input');
 
 prank.addEventListener('click', function () {
   prankvalue = 100;
@@ -18,14 +21,18 @@ prank.addEventListener('click', function () {
 fix.addEventListener('click', function () {
   prankvalue = 0;
 });
+priorityBtn.addEventListener('click', function () {
+  byPriority = !byPriority;
+});
 
 class Sensor {
-  constructor(label, data, borderColor) {
+  constructor(label, data, borderColor, priority) {
     this.label = label;
     this.data = data;
     this.borderColor = borderColor;
     this.borderWidth = 1;
     this.tension = 0.1;
+    this.priority = priority;
   }
 }
 
@@ -41,8 +48,16 @@ function testAllSensors() {
   let seconds = now.getSeconds();
   let timeString = `${hours}:${minutes}:${seconds}`;
   sensorChart.data.labels.push(timeString);
-  for (let i = 0; i < n; i++) {
-    testSensor(i);
+
+  if (byPriority) {
+    let sensorsByPriority = dataset.slice().sort((a, b) => a.priority - b.priority);
+    for (let i = 0; i < n; i++) {
+      testSensor(sensorsByPriority[i]);
+    }
+  } else {
+    for (let i = 0; i < n; i++) {
+      testSensor(dataset[i]);
+    }
   }
 }
 
@@ -50,10 +65,11 @@ function getRandomNumber(min, max) {
   return Math.random() * (max + prankvalue - min) + min;
 }
 
-function testSensor(sensorIndex) {
+function testSensor(sensor) {
+  const sensorIndex = sensor.label.slice(7, 8) - 1;
   const sensorValue = getRandomNumber(
-    xn[sensorIndex] + deltaXA[sensorIndex],
-    xv[sensorIndex] - deltaXA[sensorIndex],
+    xn[sensorIndex] - deltaXA[sensorIndex],
+    xv[sensorIndex] + deltaXA[sensorIndex],
   );
   console.log(`Testing sensor ${sensorIndex + 1}...`);
   console.log(`Sensor value: ${sensorValue}`);
@@ -80,8 +96,9 @@ function InitializeOptions() {
     const label = `Sensor ${i + 1}`;
     const dataValues = sensorData[i];
     const borderColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+    const priority = sensorPriority[i];
 
-    const sensor = new Sensor(label, dataValues, borderColor);
+    const sensor = new Sensor(label, dataValues, borderColor, priority);
     dataset.push(sensor);
     // Initialize limits
     xv[i] = upperLimitArray;
