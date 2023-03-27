@@ -4,6 +4,7 @@ const xv = []; // upper limit array
 const xn = []; // lower limit array
 const deltaXA = []; // emergency inter-set array
 const sensorData = []; // array to store sensor data
+const limitData = [];
 const dataset = [];
 const sensorPriority = [5, 0, 3, 1, 4];
 const intervals = [4, 2, 8, 12, 6];
@@ -11,11 +12,12 @@ let lowerLimitArray = 22;
 let upperLimitArray = 55;
 let prankvalue = 0;
 let byPriority = false;
-let byInterval = false;
+let byInterval = true;
 
 const prank = document.querySelector('.prank');
 const fix = document.querySelector('.fix');
 const infoBtn = document.querySelector('.info');
+const overlimitlBtn = document.querySelector('.overlimit');
 const priorityBtn = document.querySelector('#myToggle');
 const intervalBtn = document.querySelector('#myToggl');
 
@@ -31,10 +33,12 @@ priorityBtn.addEventListener('click', function () {
 intervalBtn.addEventListener('click', function () {
   byInterval = !byInterval;
 });
+overlimitlBtn.addEventListener('click', printOverLimitSensorData);
 
 infoBtn.addEventListener('click', printSensorData);
+
 class Sensor {
-  constructor(label, data, borderColor, priority, interval) {
+  constructor(label, data, borderColor, priority, interval, overLimitData) {
     this.label = label;
     this.data = data;
     this.borderColor = borderColor;
@@ -42,6 +46,7 @@ class Sensor {
     this.tension = 0.1;
     this.priority = priority;
     this.interval = interval;
+    this.overLimitData = overLimitData;
   }
 
   test() {
@@ -55,7 +60,7 @@ class Sensor {
     // Check if the sensor value is outside of the limits
     if (sensorValue < xn[sensorIndex] || sensorValue > xv[sensorIndex]) {
       console.log(`Sensor ${sensorIndex + 1} is out of limits!`);
-      // TODO: Add code to issue passport
+      limitData[sensorIndex].push(sensorValue);
     }
     // Save the sensor value to the sensor data array
     sensorData[sensorIndex].push(sensorValue);
@@ -78,7 +83,7 @@ function testAllSensors() {
     for (let i = 0; i < n; i++) {
       sensorsByPriority[i].test();
     }
-  } else if (byInterval === true) {
+  } else if (byInterval) {
     getTime();
     for (let i = 0; i < n; i++) {
       setInterval(() => dataset[i].test(), dataset[i].interval * 1000);
@@ -101,6 +106,12 @@ function printSensorData() {
   }
 }
 
+function printOverLimitSensorData() {
+  for (let i = 0; i < n; i++) {
+    console.log(`Sensor ${i + 1} data: ${limitData[i].join(', ')}`);
+  }
+}
+
 function InitializeOptions() {
   sensorChart = InitializeChart();
   for (let i = 0; i < n; i++) {
@@ -109,8 +120,9 @@ function InitializeOptions() {
     const borderColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
     const priority = sensorPriority[i];
     const interval = intervals[i];
+    const overLimitData = limitData[i];
 
-    const sensor = new Sensor(label, dataValues, borderColor, priority, interval);
+    const sensor = new Sensor(label, dataValues, borderColor, priority, interval, overLimitData);
     dataset.push(sensor);
     // Initialize limits
     xv[i] = upperLimitArray;
@@ -119,6 +131,7 @@ function InitializeOptions() {
     deltaXA[i] = 0.5;
     // Initialize sensor data array
     sensorData[i] = [];
+    limitData[i] = [];
   }
 }
 

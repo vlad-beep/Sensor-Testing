@@ -38,8 +38,8 @@ p{
 .buttons .info {
     background-color: green;
 }
-.buttons .priority-btn {
-    background-color: blue;
+.buttons .overlimit {
+    background-color: rgb(110, 3, 3);
 }
 
 .chart{
